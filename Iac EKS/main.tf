@@ -10,7 +10,9 @@ locals {
   intra_subnets   = ["10.123.5.0/24", "10.123.6.0/24"]
 
   tags = {
-    Example = local.name
+    cluster-name = local.name
+    environtment = "PROD"
+    manager = "devops-teams"
   }
 }
 
@@ -60,25 +62,26 @@ module "eks" {
   subnet_ids               = module.vpc.private_subnets
   control_plane_subnet_ids = module.vpc.intra_subnets
 
-  # EKS Managed Node Group(s)
+  # EKS Managed Node Group
   eks_managed_node_group_defaults = {
     ami_type       = "AL2_x86_64"
-    instance_types = ["m5.large"]
+    instance_types = ["m5.large","m5.xlarge"]
 
     attach_cluster_primary_security_group = true
   }
 
   eks_managed_node_groups = {
     ascode-cluster-wg = {
-      min_size     = 1
+      min_size     = 2
       max_size     = 4
       desired_size = 2
 
-      instance_types = ["t3.large"]
+      instance_types = ["t3.large","t3.xlarge"]
       capacity_type  = "SPOT"
 
       tags = {
-        ExtraTag = "helloworld"
+        manager = "devops_team"
+        environment = "PROD"
       }
     }
   }
